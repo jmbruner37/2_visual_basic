@@ -1,0 +1,125 @@
+Attribute VB_Name = "Module5"
+Sub stock_data():
+'Declare Variables
+Dim Ticker As String
+Dim Total_Stock_Volume As Double
+Dim Yearly_Change As Double
+Dim Percent_Change As Double
+Dim Greatest_Perc_Increase As Double
+Dim Greatest_Perc_Decrease As Double
+Dim Greatest_Total_Volume As Double
+Dim Summary_Table_Row As Integer
+Dim Openn As Double
+Dim Closee As Double
+
+For Each ws In Worksheets
+    'Add Headers
+    ws.Range("I1") = "Ticker"
+    ws.Range("J1") = "Yearly_Change"
+    ws.Range("K1") = "Percent_Change"
+    ws.Range("L1") = "Total_Stock_Volume"
+    'Print Results
+ 
+    ws.Range("O2") = "Greatest _% _Increase"
+    ws.Range("O3") = "Greatest_%_Decrease"
+    ws.Range("O4") = "Greatest_Total_Volume"
+    ws.Range("P1") = "Ticker"
+    ws.Range("Q1") = "Value"
+    
+    Summary_Table_Row = 2
+    Total_Stock_Volume = 0
+
+    LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+
+    Closee = ws.Cells(2, 3)
+    For x = 2 To LastRow
+        
+        If ws.Cells(x + 1, 1) <> ws.Cells(x, 1) Then
+            Ticker = ws.Cells(x, 1)
+            
+            Total_Stock_Volume = Total_Stock_Volume + ws.Cells(x, 7)
+        
+            Closee = ws.Cells(x, 6)
+           
+            Yearly_Change = Closee - Openn
+            
+            If Openn = 0 Then
+                Percent_Change = 0
+            
+            Else
+                Percent_Change = (Yearly_Change / Openn)
+           
+           End If
+            
+            ws.Range("I" & Summary_Table_Row).Value = Ticker
+            ws.Range("J" & Summary_Table_Row).Value = Yearly_Change
+            ws.Range("K" & Summary_Table_Row).Value = Percent_Change
+            ws.Range("K" & Summary_Table_Row).Style = "percent"
+            ws.Range("L" & Summary_Table_Row).Value = Total_Stock_Volume
+             
+            Total_Stock_Volume = 0
+       
+            Openn = ws.Cells(x + 1, 3)
+            
+             'Conditional formatting, Neg Red and Pos Green
+            
+             If ws.Range("J" & Summary_Table_Row).Value < 0 Then
+                ws.Range("J" & Summary_Table_Row).Interior.ColorIndex = 3
+            
+            Else
+            
+                ws.Range("J" & Summary_Table_Row).Interior.ColorIndex = 4
+            
+                End If
+            
+                Summary_Table_Row = Summary_Table_Row + 1
+        Else
+            Total_Stock_Volume = Total_Stock_Volume + ws.Cells(x, 7)
+           
+        End If
+        
+    Next x
+    
+
+    
+   
+
+
+'Set Values
+TickerGreatestIncrease = ws.Range("I2" & s).Value
+TickerGreatestDecrease = ws.Range("I2" & s).Value
+TickerGreatestVolume = ws.Range("I2" & s).Value
+
+GreatestIncrease = ws.Range("k2" & 2).Value
+GreatestDecrease = ws.Range("k2" & 2).Value
+GreatestVolume = ws.Range("l2" & s).Value
+
+
+
+'Loop rows to find greatest values
+lastrow_dis = ws.Cells(Rows.Count, "I").End(xlUp).Row
+For s = 2 To lastrow_dis:
+    If ws.Range("K" & s + 1).Value > GreatestIncrease Then
+        GreatestIncrease = ws.Range("K" & s + 1).Value
+        TickerGreatestIncrease = ws.Range("I" & s + 1).Value
+    ElseIf ws.Range("K" & s + 1).Value < GreatestDecrease Then
+        GreatestDecrease = ws.Range("K" & s + 1).Value
+        TickerGreatestDecrease = ws.Range("I" & s + 1).Value
+    ElseIf ws.Range("L" & s + 1).Value > GreatestVolume Then
+        GreatestVolume = ws.Range("L" & s + 1).Value
+        TickerGreatestVolume = ws.Range("I" & s + 1).Value
+    End If
+Next s
+
+    ws.Range("P2").Value = TickerGreatestIncrease
+    ws.Range("P3").Value = TickerGreatestDecrease
+    ws.Range("P4").Value = TickerGreatestVolume
+
+    ws.Range("Q2").Value = GreatestIncrease
+    ws.Range("Q3").Value = GreatestDecrease
+    ws.Range("Q4").Value = GreatestVolume
+    ws.Range("Q2:Q3").NumberFormat = "0.00%"
+    
+Next ws
+
+End Sub
